@@ -1,1 +1,1 @@
-recce_version = 1.0
+recce_version = '1.0'
