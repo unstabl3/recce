@@ -49,7 +49,7 @@ print("""\033[91m
 					\033[93m v1.0 By shubham_chaskar\033[00m
 """)
 
-recce = [1.0]
+recce_version = [1.0]
 if verbose:
 	print("\033[93m[~] Verbosity is enabled..\033[00m")
 
