@@ -6,7 +6,7 @@ import platform
 import time
 
 ver = platform.python_version()
-
+recce_version = '1.0'
 if (ver <= '3'):
         print("\033[91m Breakfold isn't compatible with python2 use python 3.x\033[00m")
         sys.exit(1)
@@ -49,7 +49,6 @@ print("""\033[91m
 					\033[93m v1.0 By shubham_chaskar\033[00m
 """)
 
-recce_version = '1.0'
 if verbose:
 	print("\033[93m[~] Verbosity is enabled..\033[00m")
 
