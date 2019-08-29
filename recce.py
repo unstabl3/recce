@@ -10,7 +10,8 @@ import ssl
 import warnings
 
 ver = platform.python_version()
-recce_version = '2.1'
+recce_version = '2.2'
+print("hi")
 
 if (ver <= '3'):
         print("\033[91m Recce isn't compatible with python2 use python 3.x\033[00m")
