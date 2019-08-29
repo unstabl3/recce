@@ -1,6 +1,2 @@
-platform
 requests
 pycurl
-ssl
-warnings
-concurrent.futures
