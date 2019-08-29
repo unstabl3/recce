@@ -70,7 +70,7 @@ print("""\033[91m
 |  |\  \----.|  |____ |  `----.|  `----.|  |____
 | _| `._____||_______| \______| \______||_______|\033[00m
 
-					\033[93m v1.0 By shubham_chaskar\033[00m
+					\033[93m v2.0 By shubham_chaskar\033[00m
 """)
 
 warnings.filterwarnings('ignore')
