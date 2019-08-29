@@ -10,7 +10,7 @@ import ssl
 import warnings
 
 ver = platform.python_version()
-recce_version = '2.1'
+recce_version = '2.0'
 
 if (ver <= '3'):
         print("\033[91m Recce isn't compatible with python2 use python 3.x\033[00m")
@@ -104,13 +104,20 @@ def updater():
 
 		current_directory = os.getcwd()
 
-		new_folder = curren_directory.split("/")[-1]
+		new_folder = current_directory.split("/")[-1]
 
-		os.system('git clone --quiet https://github.com/unstabl3/recce.git %s' % (new_folder))
+		try:
 
-		os.system('cp -r %s/%s/* %s' % (current_directory,new_folder,current_directory))
+			os.system('git clone --quiet https://github.com/unstabl3/recce.git %s' % (new_folder))
 
-		os.system('rm -rf %s/%s/' % (current_directory,new_folder))
+			os.system('cp -r %s/%s/* %s' % (current_directory,new_folder,current_directory))
+
+			os.system('rm -rf %s/%s/' % (current_directory,new_folder))
+
+		except Exception as ex:
+
+			print("\033[91m[!]Error ",ex,"\033[00m)
+
 	else:
 		print("\033[91m[!]Recce is already in his latest version\033[00m")
 
@@ -226,9 +233,12 @@ def server_check(domain):
 	except:
 		pass
 
-	if 'server' in headers or 'content-length' in headers:
+	if 'server' in headers:
+		if 'content-length' in headers:
 
-		return headers['server'],headers['content-length']
+			return headers['server'],headers['content-length']
+		else:
+			return headers['server'],"None"
 
 def check(data,domain):
 												#This function will compare result
@@ -336,19 +346,9 @@ if file:
 
 if domain_name:													#For single domain check
 
-	check = "curl -I " + url + " -s -m 15 --write-out %{http_code} --output /dev/null/"
+	data = recce(domain_name)
 
-	answer = os.popen(check)
-
-	if answer.read() == "000":
-		print("\033[91m[!] Host ", url, " is down\033[00m")
-
-	else:
-		if verbose:
-			print("\033[92m[~] Host ", url, "is live with status code: ",answer.read(),"\033[00m")
-		else:
-			print("\033[92m[~] Host ", url, "is live\033[00m")
-
+	check(data,domain_name)
 
 if not len(redirect) == 0:
 
