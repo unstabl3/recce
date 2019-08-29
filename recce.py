@@ -117,7 +117,7 @@ def updater():
 
 		except Exception as ex:
 
-			print("\033[91m[!]Error ",ex,"\033[00m)
+			print("\033[91m[!]Error ",ex,"\033[00m")
 
 	else:
 		print("\033[91m[!]Recce is already in his latest version\033[00m")
@@ -235,11 +235,14 @@ def server_check(domain):
 		pass
 
 	if 'server' in headers:
-		if 'content-length' in headers:
 
-			return headers['server'],headers['content-length']
-		else:
-			return headers['server'],"None"
+		try:
+			if 'content-length' in headers:
+
+				return str(headers['server']),str(headers['content-length'])
+
+		except:
+			return str(headers['server']),str("None")
 
 def check(data,domain):
 												#This function will compare result
@@ -261,7 +264,7 @@ def check(data,domain):
 			print("[@]Response: \t",data)
 
 			if server:
-				server_name,c_length = server_check(domain)
+				server_name,c_length = server_check(domain.strip())
 
 				print("[$]Server: \t",server_name,"\033[00m")
 
@@ -273,7 +276,7 @@ def check(data,domain):
 
 		else:
 			if server:
-				server_name,c_length = server_check(domain)
+				server_name,c_length = server_check(domain.strip())
 
 				print("\033[92m[~]Domain name: " , domain.strip())
 
