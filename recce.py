@@ -10,6 +10,7 @@ import ssl
 import warnings
 
 ver = platform.python_version()
+
 recce_version = '2.0'
 
 if (ver <= '3'):
