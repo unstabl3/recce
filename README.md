@@ -1,5 +1,5 @@
 # Recce
-    v.2.0
+    v.2.1
 Domain Availability Checker 
 
 # !What is this tool?
