@@ -11,7 +11,7 @@ import warnings
 
 ver = platform.python_version()
 
-recce_version = '2.0'
+recce_version = '2.1'
 
 if (ver <= '3'):
         print("\033[91m Recce isn't compatible with python2 use python 3.x\033[00m")
@@ -248,7 +248,7 @@ def check(data,domain):
 												#This function will compare result
 	if (data == 0):
 
-		print("\033[91m[~]Domain name: " , domain.strip())
+		print("\033[91m[~]Domain name: " , domain)
 
 		print("[!]Status: \tDown\033[00m")
 
@@ -257,14 +257,14 @@ def check(data,domain):
 
 		if verbose:
 
-			print("\033[92m[~]Domain name: " , domain.strip())
+			print("\033[92m[~]Domain name: " , domain)
 
 			print("[!]Status: \t live")
 
 			print("[@]Response: \t",data)
 
 			if server:
-				server_name,c_length = server_check(domain.strip())
+				server_name,c_length = server_check(domain)
 
 				print("[$]Server: \t",server_name,"\033[00m")
 
@@ -276,9 +276,9 @@ def check(data,domain):
 
 		else:
 			if server:
-				server_name,c_length = server_check(domain.strip())
+				server_name,c_length = server_check(domain)
 
-				print("\033[92m[~]Domain name: " , domain.strip())
+				print("\033[92m[~]Domain name: " , domain)
 
 				print("[!]Status: \t live")
 
@@ -291,7 +291,7 @@ def check(data,domain):
 				print("-" * 150)
 
 			else:
-				print("\033[92m[~]Domain name: " , domain.strip())
+				print("\033[92m[~]Domain name: " , domain)
 
 				print("[!]Status: \t live\033[00m")
 
@@ -299,18 +299,16 @@ def check(data,domain):
 
 		if output:
 			with open(output,"a") as output_file:						#Writing output to new file
-				if verbose:
-					print("\033[93m[~] Writing into file..\033[00m")
 
-				output_file.write(domain.strip())
+				output_file.write(domain + "\n")
 		if csv:
 			if server:
 				if length:
-					csv_list.append(str(domain.strip()) + "," + str(data) + "," + str(server_name) + "," + str(c_length))
+					csv_list.append(str(domain) + "," + str(data) + "," + str(server_name) + "," + str(c_length))
 				else:
-					csv_list.append(str(domain.strip()) + "," + str(data) + "," + str(server_name))
+					csv_list.append(str(domain) + "," + str(data) + "," + str(server_name))
 			else:
-				csv_list.append(str(domain.strip()) + "," + str(data))
+				csv_list.append(str(domain) + "," + str(data))
 
 if file:
 
@@ -338,7 +336,7 @@ if file:
 				try:
 					data = future.result()
 					if not live:
-						check(data,domain)
+						check(data,domain.strip())
 
 				except Exception as exc:
 
@@ -372,7 +370,7 @@ if not len(redirect) == 0:
 		try:
 			data = future.result()
 			if not live:
-				check(data,domain)
+				check(data,domain.strip())
 		except Exception as ex:
 			print(ex)
 
