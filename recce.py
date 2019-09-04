@@ -70,7 +70,7 @@ print("""\033[91m
 |  |\  \----.|  |____ |  `----.|  `----.|  |____
 | _| `._____||_______| \______| \______||_______|\033[00m
 
-					\033[93m v2.0 By shubham_chaskar\033[00m
+					\033[93m v2.1 By shubham_chaskar\033[00m
 """)
 
 warnings.filterwarnings('ignore')
@@ -334,9 +334,12 @@ if file:
 				domain = futures[future]
 
 				try:
-					data = future.result()
+					data = future.result(timeout=2)
 					if not live:
 						check(data,domain.strip())
+				except concurrent.futures.TimeoutError:
+					print("this took too long...")
+					#task.interrupt()
 
 				except Exception as exc:
 
