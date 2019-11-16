@@ -77,6 +77,7 @@ Making it public so anyone in community can find it helpful! :)
      
 # !Credits!
 To the Whole infosec Community ;)
+@athif shaikh for suggesting this great name! :3
 
 # !Want to contribute?
 1) Suggest a feature 
