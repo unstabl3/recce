@@ -12,7 +12,7 @@ import json
 
 ver = platform.python_version()
 
-recce_version = '3.2'
+recce_version = '3.3'
 
 slack_webhook = "PUT HERE(DONT REMOVE QUOTES)"				#slack_webhook_URL
 
