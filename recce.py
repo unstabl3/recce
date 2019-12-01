@@ -14,7 +14,7 @@ ver = platform.python_version()
 
 recce_version = '3.0'
 
-slack_webook = "PUT HERE(DONT REMOVE QUOTES)"				#slack_webhook_URL
+slack_webhook = "PUT HERE(DONT REMOVE QUOTES)"				#slack_webhook_URL
 
 if (ver <= '3'):
         print("\033[91m Recce isn't compatible with python2 use python 3.x\033[00m")
