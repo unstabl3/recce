@@ -12,7 +12,7 @@ import json
 
 ver = platform.python_version()
 
-recce_version = '3.1'
+recce_version = '3.2'
 
 slack_webhook = "PUT HERE(DONT REMOVE QUOTES)"				#slack_webhook_URL
 
@@ -123,6 +123,8 @@ def updater():
 			os.system('cp -r %s/%s/* %s' % (current_directory,new_folder,current_directory))
 
 			os.system('rm -rf %s/%s/' % (current_directory,new_folder))
+
+			print("\033[91m[!] Successfully updated..")
 
 		except Exception as ex:
 
@@ -388,6 +390,8 @@ if file:
 
 if "-f" in sys.argv:
 	pass
+elif "-u" in sys.argv:
+	sys.exit(1)
 else:
 	pool = concurrent.futures.ThreadPoolExecutor(max_workers=threads)
 	futures = {pool.submit(recce,domain.strip("\n")):domain for domain in sys.stdin}
