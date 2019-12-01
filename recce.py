@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import time
 import os
 import sys
 import platform
@@ -8,10 +8,12 @@ import pycurl
 import re
 import ssl
 import warnings
+import json
+from config import *
 
 ver = platform.python_version()
 
-recce_version = '2.1'
+recce_version = '3.0'
 
 if (ver <= '3'):
         print("\033[91m Recce isn't compatible with python2 use python 3.x\033[00m")
@@ -49,6 +51,10 @@ group2.add_argument("-l","--live",help="only print live subdomains",action="stor
 
 parser.add_argument("-r","--length",help="print response length",action="store_true")
 
+parser.add_argument("-F","--follow",help="Follow redirect",action="store_true")
+
+parser.add_argument("-S","--slack",help="send slack notification",action="store_true")
+
 args = parser.parse_args()
 
 verbose = args.verbose
@@ -61,6 +67,8 @@ live = args.live
 csv = args.csv
 length = args.length
 update = args.update
+follow = args.follow
+slack = args.slack
 										#Just A fancy banner!
 print("""\033[91m
 .______       _______   ______   ______  _______
@@ -70,7 +78,7 @@ print("""\033[91m
 |  |\  \----.|  |____ |  `----.|  `----.|  |____
 | _| `._____||_______| \______| \______||_______|\033[00m
 
-					\033[93m v2.1 By shubham_chaskar\033[00m
+					\033[93m v3.0 By shubham_chaskar\033[00m
 """)
 
 warnings.filterwarnings('ignore')
@@ -130,10 +138,23 @@ if update:
 headers = {}
 redirect = []
 csv_list = []
+live_domains = []
 
 if verbose:
 	print("\033[93m[~] Verbosity is enabled..\033[00m")
 
+def slack(data):
+
+	webhook = slack_webhook
+	slack_data = {'text':data}
+	response = requests.post(webhook,data=json.dumps(slack_data),headers={'Content-Type':'application/json'})
+
+	if not response.status_code == 200:
+		raise ValueError('some error %s %s' %(response.status_code, response.text))
+
+	else:
+		print("Data sent successfully..")
+		print("Executor is now releasing resources..")
 
 def header_function(header_line):
 
@@ -189,6 +210,8 @@ def recce(domain):
 
 	req.setopt(pycurl.URL, domain)
 
+	req.setopt(req.NOBODY, True)
+
 	req.setopt(req.FOLLOWLOCATION, True)
 
 	req.setopt(pycurl.HEADERFUNCTION, header_function)
@@ -201,19 +224,28 @@ def recce(domain):
 		pass
 
 	result = req.getinfo(req.RESPONSE_CODE)
-											#This function will make request to domain
-	if 'location' in headers:
 
-		url = str(headers['location'])
+	if follow:
+		if 'location' in headers:
 
-		redirect.append(url)
+			url = str(headers['location'])
+
+			redirect.append(url)
 
 	if live:
 
 		if not result == 0:
-
-			print("\033[92m",domain.strip(),"\033[00m")
+			if verbose:
+				print("\033[92m",domain.strip(),"\033[00m",":",result)
+			else:
+				print("\033[92m",domain.strip(),"\033[00m")
+			if output:
+				with open(output,"a") as output_file:
+					output_file.write(domain + "\n")
+			else:
+				live_domains.append(domain)
 	return result
+
 
 def server_check(domain):
 
@@ -301,6 +333,8 @@ def check(data,domain):
 			with open(output,"a") as output_file:						#Writing output to new file
 
 				output_file.write(domain + "\n")
+		else:
+			live_domains.append(domain)
 		if csv:
 			if server:
 				if length:
@@ -309,6 +343,7 @@ def check(data,domain):
 					csv_list.append(str(domain) + "," + str(data) + "," + str(server_name))
 			else:
 				csv_list.append(str(domain) + "," + str(data))
+
 
 if file:
 
@@ -322,6 +357,7 @@ if file:
 
 		print("\033[92m[~] Total number of domains found in the file are: ", num_domains,"\033[00m")
 
+
 		with open(file,"r") as f:
 
 			pool = concurrent.futures.ThreadPoolExecutor(max_workers=threads)
@@ -330,24 +366,46 @@ if file:
 
 			futures = {pool.submit(recce,domain.strip()):domain for domain in f}
 
-			for future in concurrent.futures.as_completed(futures):
-				domain = futures[future]
+			try:
+				for future in concurrent.futures.as_completed(futures,timeout=5):
+					domain = futures[future]
 
-				try:
-					data = future.result(timeout=2)
-					if not live:
-						check(data,domain.strip())
-				except concurrent.futures.TimeoutError:
-					print("this took too long...")
-					#task.interrupt()
+					try:
+						data = future.result(timeout=2)
+						if not live:
+							check(data,domain.strip())
+					except concurrent.futures.TimeoutError:
+						pass
+					except Exception as exc:
 
-				except Exception as exc:
-
-					print('%r generated an exception: %s' % (domain, exc))
-
+						print('%r generated an exception: %s' % (domain, exc))
+			except concurrent.futures.TimeoutError:
+				pass
 	else:
 		print("\033[91m[!] File not found..\033[00m")
 		sys.exit(1)
+
+if "-f" in sys.argv:
+	pass
+else:
+	pool = concurrent.futures.ThreadPoolExecutor(max_workers=threads)
+	futures = {pool.submit(recce,domain.strip("\n")):domain for domain in sys.stdin}
+
+	try:
+		for future in concurrent.futures.as_completed(futures,timeout=5):
+			domain = futures[future]
+
+			try:
+				data = future.result(timeout=2)
+				if not live:
+					check:(data,domain.strip())
+			except concurrent.futures.TimeoutError:
+				pass
+			except Exception as exc:
+				print("%r generated an exception: %s" % (domain, exc))
+
+	except concurrent.futures.TimeoutError:
+		pass
 
 if domain_name:													#For single domain check
 
@@ -355,27 +413,53 @@ if domain_name:													#For single domain check
 
 	check(data,domain_name)
 
-if not len(redirect) == 0:
+if follow:
+	redirects = list(dict.fromkeys(redirect))
+	if not len(redirect) == 0:
 
-	print("\033[93m*" * 150)
-	print("*" * 150)
-	print("[~]Redirect urls found")
-	print("\033[93m*" * 150)
-	print("*" * 150,"\033[00m")
+		print("\033[93m*" * 150)
+		print("*" * 150)
+		print("[~]Redirect urls found")
+		print("\033[93m*" * 150)
+		print("*" * 150,"\033[00m")
 
-	pool = concurrent.futures.ThreadPoolExecutor(max_workers=threads)
+		pool = concurrent.futures.ThreadPoolExecutor(max_workers=20)
 
-	futures = {pool.submit(recce,domain.strip()):domain for domain in redirect}
-
-	for future in concurrent.futures.as_completed(futures):
-		domain = futures[future]
+		futures = {pool.submit(recce,domain.strip()):domain for domain in redirects}
 
 		try:
-			data = future.result()
-			if not live:
-				check(data,domain.strip())
-		except Exception as ex:
-			print(ex)
+			for future in concurrent.futures.as_completed(futures,timeout=5):
+				domain = futures[future]
 
+				try:
+					data = future.result(timeout=2)
+					if not live:
+						check(data,domain.strip())
+				except Exception as ex:
+					print(ex)
+
+		except concurrent.futures.TimeoutError:
+			pass
 if csv:
 	csv_output(csv_list)
+time.sleep(8)
+if slack:
+	if output:
+		live_domains = 0
+		with open(output,"r") as r:
+			for domain in r:
+				live_domains += 1
+
+			data = "%s:skull: Recce completed the scan.." % ("<!channel> ")
+			slack(data)
+			data = "[~] Total Live domains are: %d." % (live_domains)
+			slack(data)
+	else:
+		data = "%s:skull: Recce completed the scan.." % ("<!channel> ")
+		slack(data)
+		data = "[~] Total Live domains are: %d." % (len(live_domains))
+		slack(data)
+
+
+else:
+	print("Executor is now releasing the resources..")
