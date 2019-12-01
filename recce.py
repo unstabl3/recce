@@ -137,6 +137,7 @@ def updater():
 
 if update:
 	updater()
+	sys.exit(0)
 
 headers = {}
 redirect = []
@@ -390,8 +391,6 @@ if file:
 
 if "-f" in sys.argv:
 	pass
-elif "-u" in sys.argv:
-	sys.exit(1)
 else:
 	pool = concurrent.futures.ThreadPoolExecutor(max_workers=threads)
 	futures = {pool.submit(recce,domain.strip("\n")):domain for domain in sys.stdin}
