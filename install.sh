@@ -10,7 +10,6 @@ then
 	exit 1
 else
 	echo "running installation.."
-	exit 0
 fi
 
 if [ $? -eq 0 ];
