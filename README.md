@@ -28,7 +28,7 @@ It makes a request to domain/subdomain and checks whether they are alive or not!
 1) `git clone https://github.com/unstabl3/recce.git`
 2) `cd recce`
 3) `chmod +x recce.py`
-4) `bash install.sh`
+4) `sudo bash install.sh`
 
 # Note:If you are using two versions of python use pip3
 
