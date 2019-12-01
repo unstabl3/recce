@@ -1,5 +1,5 @@
 # Recce
-    v.3.0
+    v.3.1
 Domain Availability Checker 
 
 # !What is Recce?
