@@ -28,7 +28,8 @@ It makes a request to domain/subdomain and checks whether they are alive or not!
 1) `git clone https://github.com/unstabl3/recce.git`
 2) `cd recce`
 3) `chmod +x recce.py`
-4) `sudo bash install.sh`
+4) `open recce.py and paste your slack_webhook="HERE"` (you can skip if you don't want slack notifications)
+5) `sudo bash install.sh`
 
 # Note:If you are using two versions of python use pip3
 
@@ -38,7 +39,7 @@ You have to configure your slack to get updates!
 To do so visit here
 [How to create slack webhook](https://slack.com/intl/en-in/help/articles/115005265063)
 
-Configure your slack_webhook in config.py file present in the recce.
+Configure your slack_webhook in recce.py inorder to get notifications.
 
 `slack_webhook = "PUT YOUR WEBHOOK HERE"`
 
