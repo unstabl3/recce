@@ -38,7 +38,7 @@ You have to configure your slack to get updates!
 To do so visit here
 [How to create slack webhook](https://slack.com/intl/en-in/help/articles/115005265063)
 
-Configure your slack_webhook in config.py file present in the recce.
+Configure your slack_webhook in recce.py in order to recieve slack notifications(you can skip if you don't want notifications). .
 
 `slack_webhook = "PUT YOUR WEBHOOK HERE"`
 
