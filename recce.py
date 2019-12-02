@@ -70,7 +70,6 @@ length = args.length
 update = args.update
 follow = args.follow
 slack = args.slack
-										#Just A fancy banner!
 print("""\033[91m
 .______       _______   ______   ______  _______
 |   _  \     |   ____| /      | /      ||   ____|
@@ -147,7 +146,7 @@ live_domains = []
 if verbose:
 	print("\033[93m[~] Verbosity is enabled..\033[00m")
 
-def slack(data):
+def slack_Noti(data):
 
 	webhook = slack_webhook
 	slack_data = {'text':data}
@@ -455,14 +454,14 @@ if slack:
 				live_domains += 1
 
 			data = "%s:skull: Recce completed the scan.." % ("<!channel> ")
-			slack(data)
+			slack_Noti(data)
 			data = "[~] Total Live domains are: %d." % (live_domains)
-			slack(data)
+			slack_Noti(data)
 	else:
 		data = "%s:skull: Recce completed the scan.." % ("<!channel> ")
-		slack(data)
+		slack_Noti(data)
 		data = "[~] Total Live domains are: %d." % (len(live_domains))
-		slack(data)
+		slack_Noti(data)
 
 
 else:
